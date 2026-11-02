@@ -2,4 +2,4 @@
 # overwritten. See opsfiles/chef/cookbooks/core/fb_chrony
 
 # Command-line options for chronyd
-OPTIONS="-F 2 -r"
+OPTIONS="-F 2"
