@@ -27,12 +27,14 @@
 module FB
   class Helpers
     class SecretString < String
+      #: () -> String
       def to_s
         self
       end
     end
 
     class RedactedString < String
+      #: (*String) -> void
       def initialize(*args)
         # Have the internal value be REDACTED to cover off cases we missed!
         super('**REDACTED**')
@@ -41,18 +43,22 @@ module FB
         self.freeze
       end
 
+      #: () -> FB::Helpers::SecretString
       def value
         FB::Helpers::SecretString.new(@actual_string)
       end
 
+      #: () -> String
       def to_s
         '**REDACTED**'
       end
 
+      #: () -> String
       def to_str
         '**REDACTED**'
       end
 
+      #: () -> String
       def inspect
         '***REDACTED***'.inspect
       end

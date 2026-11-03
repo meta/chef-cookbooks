@@ -31,6 +31,7 @@ class Chef
       "@node.root_group" => -> { ::Chef.node.root_group },
     }.freeze
 
+    #: (Hash[String, untyped]) -> untyped
     def from_hash(hash)
       hash["resources"]&.each do |rhash|
         type = rhash.delete("type").to_sym
@@ -62,6 +63,7 @@ Chef::Log.info('[fb_helpers] Loading JSON recipe monkeypatch')
 class Chef
   class CookbookVersion
     # Note - this is the only modified method on the upstream release
+    #: (untyped, untyped) -> untyped
     def load_recipe(recipe_name, run_context)
       if recipe_filenames_by_name.key?(recipe_name)
         load_ruby_recipe(recipe_name, run_context)
@@ -74,6 +76,7 @@ class Chef
       end
     end
 
+    #: () -> Hash[String, String]
     def recipe_json_filenames_by_name
       @recipe_json_filenames_by_name ||= begin
         name_map = json_filenames_by_name(files_for("recipes"))
@@ -89,6 +92,7 @@ class Chef
       end
     end
 
+    #: (untyped, untyped) -> Chef::Recipe
     def load_json_recipe(recipe_name, run_context)
       Chef::Log.trace("Found recipe #{recipe_name} in cookbook #{name}")
       recipe = Chef::Recipe.new(name, recipe_name, run_context)
@@ -103,6 +107,7 @@ class Chef
     end
 
     # Filters JSON files from the superset of provided files.
+    #: (untyped) -> Hash[String, String]
     def json_filenames_by_name(records)
       records.select { |record| record[:name].end_with?(".json") }.inject({}) { |memo, record| memo[File.basename(record[:name], ".json")] = record[:full_path]; memo }
     end
@@ -110,6 +115,7 @@ class Chef
   end
 
   class Recipe
+    #: (String) -> untyped
     def from_json_file(filename)
       self.source_file = filename
       if File.file?(filename) && File.readable?(filename)
@@ -120,6 +126,7 @@ class Chef
       end
     end
 
+    #: (String) -> untyped
     def from_json(string)
       res = JSONCompat.from_json(string)
       unless res.is_a?(Hash) && (res.key?("resources") || res.key?("include_recipes"))

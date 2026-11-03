@@ -38,6 +38,7 @@ module FB
     #   read from the node object. To prevent breaking older clients, the
     #   passed in block will be evaluated immediately and a value will
     #   be returned instead of a DelayedEvaluator.
+    #: () { () -> untyped } -> untyped
     def self.attempt_lazy(&block)
       if Chef::Version.new(Chef::VERSION) < Chef::Version.new('17.0.42')
         Chef::Log.warn(
@@ -61,6 +62,7 @@ module FB
     # Arguments:
     #   my_enumerable: An enumerable that contains elements that should be evaluated
     #
+    #: (untyped) -> untyped
     def self.evaluate_lazy_enumerable(my_enumerable)
       if my_enumerable.respond_to?(:each_pair)
         my_enumerable.each_pair do |key, value|
@@ -112,6 +114,7 @@ module FB
     #   their own line and printed contiguously in the config file. They will
     #   NOT be split up among multiple-lines.
     # - A minimum of one trailing space will be used as padding for each line
+    #: (String, ?Hash[String, untyped]) -> String
     def self.commentify(comment, arghash = {})
       defaults = { 'start' => '#', 'finish' => '', 'width' => 80 }
       arghash = defaults.merge(arghash)
@@ -225,6 +228,7 @@ If the has is specified, it takes one or more of the following keys:
     #     'cake' => 'asdf',
     #   },
     # }
+    #: (Hash[untyped, untyped], Array[String]) -> Hash[untyped, untyped]
     def self.filter_hash(hash, filter)
       self._filter_hash(hash, self._expand_filter(filter))
       # self._filter_hash_alt(hash, filter)
@@ -232,6 +236,7 @@ If the has is specified, it takes one or more of the following keys:
 
     # helper method to convert AttributeAllowlist-style filters to something
     # usable by _filter_hash
+    #: (Array[String]) -> Hash[String, untyped]
     def self._expand_filter(array_filter)
       hash_filter = {}
       array_filter.each do |f|
@@ -247,6 +252,7 @@ If the has is specified, it takes one or more of the following keys:
 
     # alternate implementation using AttributeAllowlist; does not work yet due
     # to https://github.com/chef/chef/issues/10276
+    #: (untyped, untyped) -> untyped
     def self._filter_hash_alt(hash, filter)
       if FB::Version.new(Chef::VERSION) >= FB::Version.new('16.3')
         require 'chef/attribute_allowlist'
@@ -260,6 +266,9 @@ If the has is specified, it takes one or more of the following keys:
     # private method to implement filter_hash using recursion
     # note: we can't use Chef::AttributeAllowlist here because it doesn't
     # handle empty values properly at the moment
+    # Overloads abandoned: steep joins the defaulted depth across overloads to
+    # Integer?, flagging `depth + 1` and `depth > 0` in the body.
+    #: (untyped, untyped, ?untyped) -> untyped
     def self._filter_hash(hash, filter, depth = 0)
       unless filter.is_a?(Hash)
         fail 'fb_helpers: the filter argument to filter_hash needs to be a ' +
@@ -317,6 +326,7 @@ If the has is specified, it takes one or more of the following keys:
     #
     # Arguments:
     #   thing: Required object. The object to duplicate.
+    #: (untyped) -> untyped
     def self.safe_dup(thing)
       thing.dup
     rescue TypeError
@@ -340,6 +350,7 @@ If the has is specified, it takes one or more of the following keys:
     #   merge_onto: Required hash. The base hash that will be merged onto
     #   merge_with: Required hash. The hash that will be merged on merge_onto
     #   overwrite_leaves: Optional boolean. Whether to overwrite leaves or not
+    #: (untyped, untyped, ?bool) -> untyped
     def self.merge_hash(merge_onto, merge_with, overwrite_leaves = false)
       self.merge_hash!(safe_dup(merge_onto), safe_dup(merge_with),
                        overwrite_leaves)
@@ -360,6 +371,7 @@ If the has is specified, it takes one or more of the following keys:
     #   merge_onto: Required hash. The base hash that will be merged onto
     #   merge_with: Required hash. The hash that will be merged on merge_onto
     #   overwrite_leaves: Optional boolean. Whether to overwrite leaves or not
+    #: (untyped, untyped, ?bool) -> untyped
     def self.merge_hash!(merge_onto, merge_with, overwrite_leaves = false)
       # If there are two Hashes, recursively merge.
       if merge_onto.is_a?(Hash) && merge_with.is_a?(Hash)
@@ -408,6 +420,7 @@ If the has is specified, it takes one or more of the following keys:
     #   json_string: Required string. The JSON string to parse.
     #   top_level_class: Optional class, defaults to Hash.
     #   fallback: Optional boolean, defaults to false.
+    #: (String, ?untyped, ?bool) -> untyped
     def self.parse_json(json_string, top_level_class = Hash, fallback = false)
       unless [Array, Hash, String].include?(top_level_class)
         fail 'fb_helpers: top_level_class can only be Array, Hash or ' +
@@ -454,6 +467,7 @@ If the has is specified, it takes one or more of the following keys:
     #   path: Required string. Path to the file to parse.
     #   top_level_class: Optional class, defaults to Hash.
     #   fallback: Optional boolean, defaults to false.
+    #: (String, ?untyped, ?bool) -> untyped
     def self.parse_json_file(path, top_level_class = Hash, fallback = false)
       Chef::Log.debug(
         "fb_helpers: parsing #{path} as JSON (expecting: #{top_level_class})",
@@ -491,6 +505,7 @@ If the has is specified, it takes one or more of the following keys:
     #  - :include_whitespace - treats leading and trailing whitespace as semantic
     #  - :exclude_quotes strips surrounding quotes
 
+    #: (String, ?Hash[Symbol, untyped]) -> Hash[String, String?]
     def self.parse_simple_keyvalue_file(path, options = {})
       parsed = {}
       begin
@@ -517,6 +532,7 @@ If the has is specified, it takes one or more of the following keys:
     #
     # Arguments:
     #   time: A valid time string
+    #: (String) -> Integer
     def self.parse_timeshard_start(time)
       # Validate the time string matches our prescribed format.
       begin
@@ -537,6 +553,7 @@ If the has is specified, it takes one or more of the following keys:
     #
     # Arguments:
     #   duration: A valid duration string, in days or hours
+    #: (String) -> Integer
     def self.parse_timeshard_duration(duration)
       # Multiply the number of days by 1440 min and 60 s to convert a day into
       # seconds.
@@ -553,10 +570,12 @@ If the has is specified, it takes one or more of the following keys:
       duration
     end
 
+    #: () -> bool
     def self.linux?
       RUBY_PLATFORM.include?('linux')
     end
 
+    #: () -> Integer?
     def self.windows?
       RUBY_PLATFORM =~ /mswin|mingw|windows/
     end
@@ -568,6 +587,7 @@ If the has is specified, it takes one or more of the following keys:
     #
     # Arguments:
     #   path: A string-compatible object that represents a path to test
+    #: (untyped) -> bool
     def self.mountpoint?(path)
       Pathname.new(path.to_s).mountpoint?
     end
@@ -581,6 +601,7 @@ If the has is specified, it takes one or more of the following keys:
     # Arguments:
     #   day: A string representing a day of the week. Can be long-form
     #        (e.g. "Monday") or abbreviate (e.g. "Wed")
+    #: (String) -> String
     def self.date_of_last(day)
       # Gets you the date of the last day passed
       date  = Date.parse(day)
@@ -589,6 +610,7 @@ If the has is specified, it takes one or more of the following keys:
     end
 
     # sysnative_path() determines the sysnative path on Windows
+    #: () -> String
     def self.sysnative_path
       fail unless ChefUtils.windows?
 
@@ -601,6 +623,7 @@ If the has is specified, it takes one or more of the following keys:
 
     # warn_to_remove() is used in sharding operations to help
     # discover old sharding code
+    #: (Integer, ?String) -> void
     def self.warn_to_remove(
       stack_depth, msg = 'fb_helpers: Past time shard duration! Please cleanup!'
     )
@@ -617,6 +640,7 @@ If the has is specified, it takes one or more of the following keys:
     # Normally preferred testing for existence of a user is via
     # node['etc']['passwd'], but if the user was added in the same chef run
     # then ohai won't have it.
+    #: (String) -> bool
     def self.user_exist?(user_name)
       Etc.getpwnam(user_name)
       true
@@ -627,6 +651,7 @@ If the has is specified, it takes one or more of the following keys:
     # Normally preferred testing for existence of a group is via
     # node['etc']['group'], but if the group was added in the same chef run
     # then ohai won't have it.
+    #: (String) -> bool
     def self.group_exist?(group_name)
       Etc.getgrnam(group_name)
       true
@@ -634,12 +659,14 @@ If the has is specified, it takes one or more of the following keys:
       false
     end
 
+    #: (String) -> String?
     def self.get_hwaddr(interface)
       addrfile = "/sys/class/net/#{interface}/address"
       return nil unless ::File.exist?(addrfile)
       ::File.read(addrfile).strip.upcase
     end
 
+    #: (untyped, untyped, untyped) -> untyped
     def self._request_nw_changes_permission(run_context, new_resource, diff)
       run_context.node.default['fb_helpers']['_nw_perm_requested'] = true
       notification = Chef::Resource::Notification.new(
@@ -663,6 +690,7 @@ If the has is specified, it takes one or more of the following keys:
     #
     # Arguments:
     #   path: Required file path
+    #: (String) -> String
     def self.readfile(filename)
       begin
         value = File.read(filename).chomp
@@ -692,6 +720,7 @@ If the has is specified, it takes one or more of the following keys:
   class Version < Array #[untyped] # rubocop:disabled Style/CommentedKeyword
     # This is intentional.
     # rubocop:disable Lint/MissingSuper
+    #: (String?) -> void
     def initialize(s)
       @string_form = s
       if s.nil?
@@ -702,14 +731,17 @@ If the has is specified, it takes one or more of the following keys:
     end
     # rubocop:enable Lint/MissingSuper
 
+    #: () -> String
     def to_s
       @string_form
     end
 
+    #: () -> Array[Integer]
     def to_a
       @arr
     end
 
+    #: (FB::Version | String, ?bool) -> Integer
     def compare(other, exact = true)
       other ||= new
       unless other.is_a?(FB::Version)
@@ -725,36 +757,49 @@ If the has is specified, it takes one or more of the following keys:
 
     alias_method '<=>', :compare
 
+    # rbs-inline ignores alias_method, so declare <=> explicitly. Without it,
+    # callers resolve Object#<=> (Integer?) and nil breaks their comparisons.
+    # @rbs!
+    #   def <=>: (untyped) -> Integer
+
+    #: (untyped) -> bool
     def <=(other)
       compare(other) <= 0
     end
 
+    #: (untyped) -> bool
     def >=(other)
       compare(other) >= 0
     end
 
+    #: (untyped) -> bool
     def <(other)
       compare(other).negative?
     end
 
+    #: (untyped) -> bool
     def >(other)
       compare(other).positive?
     end
 
+    #: (untyped) -> bool
     def ==(other)
       compare(other).zero?
     end
 
+    #: (*untyped) -> untyped
     def [](*args)
       @arr[*args]
     end
 
+    #: (untyped) -> bool
     def ===(other)
       # Useful to use in case statements
       compare(other, false).zero?
     end
 
     # Oh, come on rubocop...
+    #: () -> String
     def inspect
       @string_form
     end
@@ -770,6 +815,7 @@ If the has is specified, it takes one or more of the following keys:
   #   => false
   # Loose matching (`===`) behaves like `FB::Version`.
   class RpmVersion < Version
+    #: () -> Array[String?]
     def evr
       @evr ||= self.class.parse_evr(@string_form)
     end
@@ -778,6 +824,7 @@ If the has is specified, it takes one or more of the following keys:
     # epoch is everything before the first ':', and the release is
     # everything after the first '-' following it. An empty release is
     # treated as missing.
+    #: (String?) -> Array[String?]
     def self.parse_evr(s)
       epoch, sep, rest = s.to_s.partition(':')
       if sep.empty?
@@ -795,6 +842,7 @@ If the has is specified, it takes one or more of the following keys:
     # Port of rpm's `rpmvercmp()` (lib/rpmvercmp.c), including the `~`
     # (sorts before anything) and `^` (sorts after the base version)
     # separators. Returns -1, 0 or 1.
+    #: (untyped, untyped) -> Integer
     def self.rpmvercmp(a, b)
       return 0 if a == b
 
@@ -860,6 +908,7 @@ If the has is specified, it takes one or more of the following keys:
 
     # Mirrors rpm's `labelCompare()`: a missing release sorts before any
     # release.
+    #: (untyped, untyped) -> Integer
     def self.compare_evr(a, b)
       rc = rpmvercmp(a[0], b[0])
       return rc unless rc.zero?
@@ -874,6 +923,7 @@ If the has is specified, it takes one or more of the following keys:
       rpmvercmp(a[2], b[2])
     end
 
+    #: (untyped, ?bool) -> Integer
     def compare(other, exact = true)
       return super unless exact
 

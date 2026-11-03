@@ -14,6 +14,7 @@
 
 module FB
   class Helpers
+    #: (untyped, use_scaled_limit: bool) -> Integer
     def self.default_memlock_kbytes(node, use_scaled_limit:)
       total_system_memory_kbytes = node['memory']['total'].to_i
       return total_system_memory_kbytes / 1024 unless use_scaled_limit

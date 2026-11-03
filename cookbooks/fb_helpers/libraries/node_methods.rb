@@ -23,15 +23,20 @@ class Chef
   # Our extensions of the node object
   class Node
 
+    #: () -> bool
     def linux?
       return @_fb_helpers_linux unless @_fb_helpers_linux.nil?
       @_fb_helpers_linux = self['os'] == 'linux'
     end
 
+    #: () -> String
     def major_platform_version
       self['platform_version'].split('.')[0]
     end
 
+    # Param is untyped: the case narrows `ver`, not `version`, so the
+    # String branch would pass a union to FB::Version.new(String?).
+    #: (untyped) -> FB::Version
     def _canonical_version(version)
       @canonical_version ||= {}
 
@@ -51,10 +56,12 @@ class Chef
       end
     end
 
+    #: () -> FB::Version
     def _self_version
       @self_version ||= FB::Version.new(self['platform_version'])
     end
 
+    #: (untyped, ?bool) -> bool
     def os_min_version?(version, full = false)
       if full
         self._self_version >= self._canonical_version(version)
@@ -63,6 +70,7 @@ class Chef
       end
     end
 
+    #: (untyped, ?bool) -> bool
     def os_max_version?(version, full = false)
       if full
         self._self_version <= self._canonical_version(version)
@@ -73,22 +81,26 @@ class Chef
 
     # Is this a RHEL-compatible OS with a version number of
     # `version`
+    #: (untyped) -> bool?
     def el_version?(v)
       self.rhel_family? && self._platform_version_helper?(v)
     end
 
     # Is this a RHEL-compatible OS with a minimum major version number of
     # `version`
+    #: (untyped, ?bool) -> bool
     def el_min_version?(version, full = false)
       self.rhel_family? && self.os_min_version?(version, full)
     end
 
     # Is this a RHEL-compatible OS with a maximum major version number of
     # `version`
+    #: (untyped, ?bool) -> bool
     def el_max_version?(version, full = false)
       self.rhel_family? && self.os_max_version?(version, full)
     end
 
+    #: () -> bool
     def rhel_family?
       return @_fb_helpers_rhel_family unless @_fb_helpers_rhel_family.nil?
       @_fb_helpers_rhel_family = self['platform_family'] == 'rhel'
@@ -107,313 +119,377 @@ class Chef
     alias rhel_max_version? el_max_version?
 
     # DEPRECATED: use rhel_version?
+    #: () -> bool?
     def rhel_family7?
       self.rhel_version?(7)
     end
 
     # DEPRECATED: use rhel_version?
+    #: () -> bool?
     def rhel_family8?
       self.rhel_version?(8)
     end
 
     # DEPRECATED: use rhel_version?
+    #: () -> bool?
     def rhel_family9?
       self.rhel_version?(9)
     end
 
     # DEPRECATED: use rhel_version?
+    #: () -> bool?
     def rhel7?
       self.rhel_version?(7)
     end
 
     # DEPRECATED: use rhel_version?
+    #: () -> bool?
     def rhel8?
       self.rhel_version?(8)
     end
 
     # DEPRECATED: use rhel_version?
+    #: () -> bool?
     def rhel8_8?
       self.rhel_version?('8.8')
     end
 
     # DEPRECATED: use rhel_version?
+    #: () -> bool?
     def rhel9?
       self.rhel_version?(9)
     end
 
     # DEPRECATED: use rhel_version?
+    #: () -> bool?
     def rhel10?
       self.rhel_version?(10)
     end
 
     # DO NOT ADD anymore rhelXX? methods, use rhel_version?
 
+    #: () -> bool
     def centos?
       return @_fb_helpers_centos unless @_fb_helpers_centos.nil?
       @_fb_helpers_centos = self['platform'] == 'centos'
     end
 
+    #: (untyped, ?bool) -> bool
     def centos_min_version?(version, full = false)
       self.centos? && self.os_min_version?(version, full)
     end
 
+    #: (untyped, ?bool) -> bool
     def centos_max_version?(version, full = false)
       self.centos? && self.os_max_version?(version, full)
     end
 
+    #: (untyped) -> bool?
     def centos_version?(v)
       self.centos? && self._platform_version_helper?(v)
     end
 
     # DEPRECATED: use centos_version?
+    #: () -> bool?
     def centos5?
       self.centos_version?(5)
     end
 
     # DEPRECATED: use centos_version?
+    #: () -> bool?
     def centos6?
       self.centos_version?(6)
     end
 
     # DEPRECATED: use centos_version?
+    #: () -> bool?
     def centos7?
       self.centos_version?(7)
     end
 
     # DEPRECATED: use centos_version?
+    #: () -> bool?
     def centos8?
       self.centos_version?(8)
     end
 
     # DEPRECATED: use centos_version?
+    #: () -> bool?
     def centos9?
       self.centos_version?(9)
     end
 
     # DEPRECATED: use centos_version?
+    #: () -> bool?
     def centos10?
       self.centos_version?(10)
     end
 
     # DO NOT ADD anymore centosXX? methods, use rhel_version?
 
+    #: () -> bool
     def rocky?
       return @_fb_helpers_rocky unless @_fb_helpers_rocky.nil?
       @_fb_helpers_rocky = self['platform'] == 'rocky'
     end
 
+    #: (untyped, ?bool) -> bool
     def rocky_max_version?(version, full = false)
       self.rocky? && self.os_max_version?(version, full)
     end
 
+    #: (untyped, ?bool) -> bool
     def rocky_min_version?(version, full = false)
       self.rocky? && self.os_min_version?(version, full)
     end
 
+    #: () -> bool
     def almalinux?
       return @_fb_helpers_almalinux unless @_fb_helpers_almalinux.nil?
       @_fb_helpers_almalinux = self['platform'] == 'almalinux'
     end
 
+    #: (untyped, ?bool) -> bool
     def almalinux_max_version?(version, full = false)
       self.almalinux? && self.os_max_version?(version, full)
     end
 
+    #: (untyped, ?bool) -> bool
     def almalinux_min_version?(version, full = false)
       self.almalinux? && self.os_min_version?(version, full)
     end
 
+    #: (untyped) -> bool?
     def almalinux_version?(v)
       self.almalinux? && self._platform_version_helper?(v)
     end
 
+    #: () -> bool
     def redhat?
       return @_fb_helpers_redhat unless @_fb_helpers_redhat.nil?
       @_fb_helpers_redhat = self['platform'] == 'redhat'
     end
 
+    #: (untyped, ?bool) -> bool
     def redhat_max_version?(version, full = false)
       self.redhat? && self.os_max_version?(version, full)
     end
 
+    #: (untyped, ?bool) -> bool
     def redhat_min_version?(version, full = false)
       self.redhat? && self.os_min_version?(version, full)
     end
 
+    #: (untyped) -> bool?
     def redhat_version?(v)
       self.redhat? && self._platform_version_helper?(v)
     end
 
     # DEPRECATED: use redhat_version?
+    #: () -> bool?
     def redhat6?
       self.redhat_version?(6)
     end
 
     # DEPRECATED: use redhat_version?
+    #: () -> bool?
     def redhat7?
       self.redhat_version?(7)
     end
 
     # DEPRECATED: use redhat_version?
+    #: () -> bool?
     def redhat8?
       self.redhat_version?(8)
     end
 
     # DEPRECATED: use redhat_version?
+    #: () -> bool?
     def redhat9?
       self.redhat_version?(9)
     end
 
     # DEPRECATED: use redhat_version?
+    #: () -> bool?
     def redhat10?
       self.redhat_version?(10)
     end
 
     # DO NOT ADD anymore redhatXX? methods, use redhat_version?
 
+    #: () -> bool
     def oracle?
       return @_fb_helpers_oracle unless @_fb_helpers_oracle.nil?
       @_fb_helpers_oracle = self['platform'] == 'oracle'
     end
 
+    #: (untyped, ?bool) -> bool
     def oracle_max_version?(version, full = false)
       self.oracle? && self.os_max_version?(version, full)
     end
 
+    #: (untyped, ?bool) -> bool
     def oracle_min_version?(version, full = false)
       self.oracle? && self.os_min_version?(version, full)
     end
 
+    #: (untyped) -> bool?
     def oracle_version?(v)
       self.oracle? && self._platform_version_helper?(v)
     end
 
     # DEPRECATED: use oracle_version?
+    #: () -> bool?
     def oracle5?
       self.oracle_version?(5)
     end
 
     # DEPRECATED: use oracle_version?
+    #: () -> bool?
     def oracle6?
       self.oracle_version?(6)
     end
 
     # DEPRECATED: use oracle_version?
+    #: () -> bool?
     def oracle7?
       self.oracle_version?(7)
     end
 
     # DEPRECATED: use oracle_version?
+    #: () -> bool?
     def oracle8?
       self.oracle_version?(8)
     end
 
     # DEPRECATED: use oracle_version?
+    #: () -> bool?
     def oracle9?
       self.oracle_version?(9)
     end
 
     # DEPRECATED: use oracle_version?
+    #: () -> bool?
     def oracle10?
       self.oracle_version?(10)
     end
 
     # DO NOT ADD anymore redhatXX? methods, use _version?
 
+    #: () -> bool
     def fedora_family?
       return @_fb_helpers_fedora_family unless @_fb_helpers_fedora_family.nil?
       @_fb_helpers_fedora_family = self['platform_family'] == 'fedora'
     end
 
+    #: () -> bool
     def fedora?
       return @_fb_helpers_fedora unless @_fb_helpers_fedora.nil?
       @_fb_helpers_fedora = self['platform'] == 'fedora'
     end
 
+    #: (untyped) -> bool?
     def fedora_version?(v)
       self.fedora? && self._platform_version_helper?(v)
     end
 
     # DEPRECATED: Use fedora_version?
+    #: () -> bool?
     def fedora27?
       self.fedora_version?(27)
     end
 
     # DEPRECATED: Use fedora_version?
+    #: () -> bool?
     def fedora28?
       self.fedora_version?(28)
     end
 
     # DEPRECATED: Use fedora_version?
+    #: () -> bool?
     def fedora29?
       self.fedora_version?(29)
     end
 
     # DEPRECATED: Use fedora_version?
+    #: () -> bool?
     def fedora30?
       self.fedora_version?(30)
     end
 
     # DEPRECATED: Use fedora_version?
+    #: () -> bool?
     def fedora31?
       self.fedora_version?(31)
     end
 
     # DEPRECATED: Use fedora_version?
+    #: () -> bool?
     def fedora32?
       self.fedora_version?(32)
     end
 
     # DEPRECATED: Use fedora_version?
+    #: () -> bool?
     def fedora33?
       self.fedora_version?(33)
     end
 
     # DEPRECATED: Use fedora_version?
+    #: () -> bool?
     def fedora34?
       self.fedora_version?(34)
     end
 
     # DEPRECATED: Use fedora_version?
+    #: () -> bool?
     def fedora35?
       self.fedora_version?(35)
     end
 
     # DEPRECATED: Use fedora_version?
+    #: () -> bool?
     def fedora36?
       self.fedora_version?(36)
     end
 
     # DEPRECATED: Use fedora_version?
+    #: () -> bool?
     def fedora37?
       self.fedora_version?(37)
     end
 
     # DEPRECATED: Use fedora_version?
+    #: () -> bool?
     def fedora38?
       self.fedora_version?(38)
     end
 
     # DEPRECATED: Use fedora_version?
+    #: () -> bool?
     def fedora39?
       self.fedora_version?(39)
     end
 
     # DEPRECATED: Use fedora_version?
+    #: () -> bool?
     def fedora40?
       self.fedora_version?(40)
     end
 
     # DO NOT ADD MORE fedoraXX? methods - use `fedora_version?`
 
+    #: (untyped, ?bool) -> bool
     def fedora_max_version?(version, full = false)
       self.fedora? && self.os_max_version?(version, full)
     end
 
+    #: (untyped, ?bool) -> bool
     def fedora_min_version?(version, full = false)
       self.fedora? && self.os_min_version?(version, full)
     end
 
+    #: () -> bool
     def eln?
       # ELN recently changed to ship ID=eln in /etc/os-release, but we need to
       # support this and the old scheme for detecting if this system is ELN
@@ -424,29 +500,35 @@ class Chef
         self['os_release']['variant_id'] == 'eln'
     end
 
+    #: () -> bool
     def debian_family?
       return @_fb_helpers_debian_family unless @_fb_helpers_debian_family.nil?
       @_fb_helpers_debian_family = self['platform_family'] == 'debian'
     end
 
+    #: () -> bool
     def debian?
       return @_fb_helpers_debian unless @_fb_helpers_debian.nil?
       @_fb_helpers_debian = self['platform'] == 'debian'
     end
 
+    #: () -> bool
     def debian_sid?
       debian? && self['platform_version'].include?('sid')
     end
 
+    #: (untyped, ?bool) -> bool
     def debian_max_version?(version, full = false)
       self.debian? && self.os_max_version?(version, full)
     end
 
+    #: (untyped, ?bool) -> bool
     def debian_min_version?(version, full = false)
       self.debian? &&
         (self.debian_sid? || self.os_min_version?(version, full))
     end
 
+    #: () -> bool
     def ubuntu?
       return @_fb_helpers_ubuntu unless @_fb_helpers_ubuntu.nil?
       @_fb_helpers_ubuntu = self['platform'] == 'ubuntu'
@@ -455,6 +537,7 @@ class Chef
     # If it includes a dot, compares version exactly.
     # If it does not contain a dot, ensures the value
     # is either the same, or starts with that verison and a dot
+    #: (Integer | Float | String) -> bool?
     def _platform_version_helper?(v)
       case v
       when Integer, String
@@ -478,85 +561,102 @@ class Chef
       end
     end
 
+    #: (untyped) -> bool?
     def ubuntu_version?(v)
       ubuntu_platform? && self._platform_version_helper?(v)
     end
 
+    #: (untyped, ?bool) -> bool
     def ubuntu_max_version?(version, full = false)
       self.ubuntu? && self.os_max_version?(version, full)
     end
 
+    #: (untyped, ?bool) -> bool
     def ubuntu_min_version?(version, full = false)
       self.ubuntu? && self.os_min_version?(version, full)
     end
 
     # DEPRECATED: Use ubuntu_version?
+    #: () -> bool?
     def ubuntu12?
       self.ubuntu_version?(12)
     end
 
     # DEPRECATED: Use ubuntu_version?
+    #: () -> bool?
     def ubuntu14?
       self.ubuntu_version?(14)
     end
 
     # DEPRECATED: Use ubuntu_version?
+    #: () -> bool?
     def ubuntu15?
       self.ubuntu_version?(15)
     end
 
     # DEPRECATED: Use ubuntu_version?
+    #: () -> bool?
     def ubuntu16?
       self.ubuntu_version?(16)
     end
 
     # DEPRECATED: Use ubuntu_version?
+    #: () -> bool?
     def ubuntu1610?
       self.ubuntu_version?(16.10)
     end
 
     # DEPRECATED: Use ubuntu_version?
+    #: () -> bool?
     def ubuntu17?
       self.ubuntu_version?(17)
     end
 
     # DEPRECATED: Use ubuntu_version?
+    #: () -> bool?
     def ubuntu1704?
       self.ubuntu_version?(17.04)
     end
 
     # DEPRECATED: Use ubuntu_version?
+    #: () -> bool?
     def ubuntu18?
       self.ubuntu_version?(18)
     end
 
     # DEPRECATED: Use ubuntu_version?
+    #: () -> bool?
     def ubuntu1804?
       self.ubuntu_version?(18.04)
     end
 
     # DEPRECATED: Use ubuntu_version?
+    #: () -> bool?
     def ubuntu20?
       self.ubuntu_version?(20)
     end
 
     # DO NOT ADD ADDITIONAL ubuntuXX? methods, use ubuntu_version?
 
+    #: () -> bool
     def linuxmint?
       return @_fb_helpers_linuxmint unless @_fb_helpers_linuxmint.nil?
       @_fb_helpers_linuxmint = self['platform'] == 'linuxmint'
     end
 
+    #: () -> bool
     def arch_family?
       return @_fb_helpers_arch_family unless @_fb_helpers_arch_family.nil?
       @_fb_helpers_arch_family = self['platform_family'] == 'arch'
     end
 
+    #: () -> bool
     def arch?
       return @_fb_helpers_arch unless @_fb_helpers_arch.nil?
       @_fb_helpers_arch = self['platform'] == 'arch'
     end
 
+    #: () -> bool
     def macos?
       return @_fb_helpers_macos unless @_fb_helpers_macos.nil?
       @_fb_helpers_macos = self['platform'] == 'mac_os_x'
@@ -564,247 +664,301 @@ class Chef
 
     alias macosx? macos?
 
+    #: (untyped) -> bool?
     def macos_version?(v)
       macos? && self._platform_version_helper?(v)
     end
 
     # DEPRECATED: Use macos_version?
+    #: () -> bool?
     def macos10?
       self.macos_version?(10)
     end
 
     # DEPRECATED: Use macos_version?
+    #: () -> bool?
     def macos11?
       self.macos_version?(11)
     end
 
     # DEPRECATED: Use macos_version?
+    #: () -> bool?
     def macos12?
       self.macos_version?(12)
     end
 
     # DEPRECATED: Use macos_version?
+    #: () -> bool?
     def macos13?
       self.macos_version?(13)
       macos? && self['platform_version'].start_with?('13.')
     end
 
     # DEPRECATED: Use macos_version?
+    #: () -> bool?
     def macos14?
       self.macos_version?(14)
     end
 
     # DEPRECATED: Use macos_version?
     # This function... has never worked. You can't >= a string...
+    #: () -> bool
     def macos15v4plus?
       macos? && self['platform_version'] >= '15.4'
     end
 
     # DEPRECATED: Use macos_version?
+    #: () -> bool?
     def macos15?
       self.macos_version?(15)
     end
 
     # DO NOT ADD ADDITIONAL macosXX? methods, use maco_version?
 
+    #: () -> bool
     def mac_mini_2018?
       macos? && self['hardware']['machine_model'] == 'Macmini8,1'
     end
 
+    #: () -> bool
     def mac_mini_2020?
       macos? && self['hardware']['machine_model'] == 'Macmini9,1'
     end
 
+    #: () -> bool
     def windows?
       return @_fb_helpers_windows unless @_fb_helpers_windows.nil?
       @_fb_helpers_windows = self['platform_family'] == 'windows'
     end
 
+    #: () -> bool
     def windows_desktop?
       windows? && self['kernel']['product_type'] == 'Workstation'
     end
 
+    #: () -> bool
     def windows8?
       windows_desktop? && self['platform_version'].start_with?('6.2')
     end
 
+    #: () -> bool
     def windows8_1?
       windows_desktop? && self['platform_version'].start_with?('6.3')
     end
 
+    #: () -> bool
     def windows10?
       windows_desktop? && self['platform_version'].start_with?('10.0.1')
     end
 
+    #: () -> bool
     def windows11?
       windows_desktop? && self['platform_version'].start_with?('10.0.2')
     end
 
+    #: () -> bool
     def windows10_or_newer?
       windows_desktop? &&
         self._self_version >= self._canonical_version('10.0.1')
     end
 
+    #: () -> bool
     def windows_server?
       windows? && self['kernel']['product_type'] == 'Server'
     end
 
+    #: () -> bool
     def windows2008?
       windows_server? && self['platform_version'] == '6.0'
     end
 
+    #: () -> bool
     def windows2008r2?
       windows_server? && self['platform_version'] == '6.1.7600'
     end
 
+    #: () -> bool
     def windows2008r2sp1?
       windows_server? && self['platform_version'] == '6.1.7601'
     end
 
+    #: () -> bool
     def windows2012?
       windows_server? && self['platform_version'].start_with?('6.2')
     end
 
+    #: () -> bool
     def windows2012r2?
       windows_server? && self['platform_version'].start_with?('6.3')
     end
 
+    #: () -> bool
     def windows2016?
       windows_server? && self['platform_version'] == '10.0.14393'
     end
 
+    #: () -> bool
     def windows2019?
       windows_server? && self['platform_version'] == '10.0.17763'
     end
 
+    #: () -> bool
     def windows2022?
       windows_server? && self['platform_version'] == '10.0.20348'
     end
 
+    #: () -> bool
     def windows2025?
       windows_server? && self['platform_version'] == '10.0.26100'
     end
 
     # from https://en.wikipedia.org/wiki/Windows_10_version_history
+    #: () -> bool
     def windows1903?
       windows? && self['platform_version'] == '10.0.18362'
     end
 
+    #: () -> bool
     def windows1909?
       windows? && self['platform_version'] == '10.0.18363'
     end
 
+    #: () -> bool
     def windows2004?
       windows? && self['platform_version'] == '10.0.19041'
     end
 
+    #: () -> bool
     def windows20h2?
       windows? && self['platform_version'] == '10.0.19042'
     end
 
+    #: () -> bool
     def windows21h1?
       windows? && self['platform_version'] == '10.0.19043'
     end
 
+    #: () -> bool
     def windows21h2?
       windows? && self['platform_version'] == '10.0.19044'
     end
 
+    #: () -> bool
     def windows2012_or_newer?
       windows_server? && self._self_version >= self._canonical_version('6.2')
     end
 
+    #: () -> bool
     def windows2012r2_or_newer?
       windows_server? && self._self_version >= self._canonical_version('6.3')
     end
 
+    #: () -> bool
     def windows2016_or_newer?
       windows_server? &&
         self._self_version >= self._canonical_version('10.0.14393')
     end
 
+    #: () -> bool
     def windows2019_or_newer?
       windows_server? &&
         self._self_version >= self._canonical_version('10.0.17763')
     end
 
+    #: () -> bool
     def windows2022_or_newer?
       windows_server? &&
         self._self_version >= self._canonical_version('10.0.20348')
     end
 
+    #: () -> bool
     def windows2025_or_newer?
       windows_server? &&
         self._self_version >= self._canonical_version('10.0.26100')
     end
 
+    #: () -> bool
     def windows2012_or_older?
       windows_server? &&
         self._self_version < self._canonical_version('6.3')
     end
 
+    #: () -> bool
     def windows2012r2_or_older?
       windows_server? &&
         self._self_version < self._canonical_version('6.4')
     end
 
+    #: () -> bool
     def windows2016_or_older?
       windows_server? &&
         self._self_version <= self._canonical_version('10.0.14393')
     end
 
+    #: () -> bool
     def windows2019_or_older?
       windows_server? &&
         self._self_version <= self._canonical_version('10.0.17763')
     end
 
+    #: () -> bool
     def windows2022_or_older?
       windows_server? &&
         self._self_version <= self._canonical_version('10.0.20348')
     end
 
+    #: () -> bool
     def windows2025_or_older?
       windows_server? &&
         self._self_version <= self._canonical_version('10.0.26100')
     end
 
+    #: () -> bool
     def aristaeos?
       return @_fb_helpers_aristaeos unless @_fb_helpers_aristaeos.nil?
       @_fb_helpers_aristaeos = self['platform'] == 'arista_eos'
     end
 
+    #: (untyped) -> bool
     def aristaeos_version_plus?(v)
       self.aristaeos? && self.os_min_version?(v, true)
     end
 
     # DEPRECATED: Use aristaeos_version_plus?
+    #: () -> bool
     def aristaeos_4_28_or_newer?
       self.aristaeos_version_plus?('4.28')
     end
 
     # DEPRECATED: Use aristaeos_version_plus?
+    #: () -> bool
     def aristaeos_4_30_or_newer?
       self.aristaeos_version_plus?('4.30')
     end
 
     # DEPRECATED: Use aristaeos_version_plus?
+    #: () -> bool
     def aristaeos_4_32_or_newer?
       self.aristaeos_version_plus?('4.32')
     end
 
+    #: () -> bool
     def embedded?
       self.aristaeos?
     end
 
+    #: () -> bool
     def systemd?
       ::File.directory?('/run/systemd/system')
     end
 
+    #: () -> bool
     def freebsd?
       return @_fb_helpers_freebsd unless @_fb_helpers_freebsd.nil?
       @_fb_helpers_freebsd = self['platform_family'] == 'freebsd'
     end
 
+    #: () -> bool
     def virtual?
       vm_systems = %w{
         bhyve
@@ -820,6 +974,7 @@ class Chef
         vm_systems.include?(self['virtualization']['system'])
     end
 
+    #: () -> String?
     def virtual_macos_type
       unless macos?
         Chef::Log.warn(
@@ -846,18 +1001,22 @@ class Chef
       virtual_type
     end
 
+    #: () -> bool
     def parallels?
       virtual_macos_type == 'parallels'
     end
 
+    #: () -> bool
     def vmware?
       virtual_macos_type == 'vmware'
     end
 
+    #: () -> bool
     def virtualbox?
       virtual_macos_type == 'virtualbox'
     end
 
+    #: () -> bool
     def container?
       container_systems = %w{
         docker
@@ -872,20 +1031,24 @@ class Chef
       result.nil? ? false : result
     end
 
+    #: () -> bool
     def vagrant?
       File.directory?('/vagrant')
     end
 
+    #: () -> bool
     def cloud?
       self['cloud'] && !self['cloud']['provider'].nil?
     end
 
+    #: () -> bool
     def aws?
       self.cloud? && self['cloud']['provider'] == 'ec2'
     end
 
     # Takes one or more AWS account IDs as strings and return true if this node
     # is in any of those accounts.
+    #: (*untyped) -> bool
     def in_aws_account?(*accts)
       return false if self.quiescent?
       return false unless self['ec2']
@@ -894,6 +1057,7 @@ class Chef
       accts.include?(self['ec2']['account_id'])
     end
 
+    #: () -> String
     def ohai_fs_ver
       @ohai_fs_ver ||=
         self['filesystem2'] ? 'filesystem2' : 'filesystem'
@@ -901,6 +1065,7 @@ class Chef
 
     # Take a string representing a mount point, and return the
     # device it resides on.
+    #: (String) -> String?
     def device_of_mount(m)
       fs = self.filesystem_data
       unless Pathname.new(m).mountpoint?
@@ -932,6 +1097,7 @@ class Chef
       nil
     end
 
+    #: (String, String) -> bool
     def device_formatted_as?(device, fstype)
       fs = self.filesystem_data
       if fs && fs['by_device'] && fs['by_device'][device] &&
@@ -942,6 +1108,7 @@ class Chef
       false
     end
 
+    #: (String, ?bool, ?bool) -> String?
     def resolve_dns_name(hostname, brackets = false, force_v4 = false)
       ip_addrs = Addrinfo.getaddrinfo(hostname, nil)
       ip_addrs_v4 = ip_addrs.select(&:ipv4?)
@@ -963,6 +1130,7 @@ class Chef
 
     # Takes a string corresponding to a filesystem. Returns the size
     # in GB of that filesystem.
+    #: (String, String) -> Float?
     def fs_value(p, val)
       key = case val
             when 'size'
@@ -990,10 +1158,12 @@ class Chef
       nil
     end
 
+    #: (String) -> Float?
     def fs_available_kb(p)
       self.fs_value(p, 'available')
     end
 
+    #: (String) -> Float?
     def fs_available_gb(p)
       k = self.fs_value(p, 'available')
       if k
@@ -1003,10 +1173,12 @@ class Chef
       nil
     end
 
+    #: (String) -> Float?
     def fs_size_kb(p)
       self.fs_value(p, 'size')
     end
 
+    #: (String) -> Float?
     def fs_size_gb(p)
       k = self.fs_size_kb(p)
       if k
@@ -1016,41 +1188,49 @@ class Chef
       nil
     end
 
+    #: () -> bool
     def efi?
       File.directory?('/sys/firmware/efi')
     end
 
+    #: () -> bool
     def coreboot?
       File.directory?('/sys/firmware/vpd') ||
         self['dmi']['bios']['vendor'] == 'coreboot'
     end
 
+    #: () -> bool
     def aarch64?
       return @_fb_helpers_aarch64 unless @_fb_helpers_aarch64.nil?
       @_fb_helpers_aarch64 = self['kernel']['machine'] == 'aarch64'
     end
 
+    #: () -> bool
     def x64?
       return @_fb_helpers_x64 unless @_fb_helpers_x64.nil?
       @_fb_helpers_x64 = self['kernel']['machine'] == 'x86_64'
     end
 
+    #: () -> bool
     def cgroup_mounted?
       fs = self.filesystem_data
       fs && fs['by_mountpoint'] &&
         fs['by_mountpoint'].include?('/sys/fs/cgroup')
     end
 
+    #: () -> bool
     def cgroup1?
       cgroup_mounted? && self.filesystem_data['by_mountpoint'][
         '/sys/fs/cgroup']['fs_type'] != 'cgroup2'
     end
 
+    #: () -> bool
     def cgroup2?
       cgroup_mounted? && self.filesystem_data['by_mountpoint'][
         '/sys/fs/cgroup']['fs_type'] == 'cgroup2'
     end
 
+    #: (Integer) -> Integer
     def get_flexible_shard(shard_size)
       @flexible_shard_value ||= {}
       @flexible_shard_value[shard_size] ||=
@@ -1064,29 +1244,35 @@ class Chef
       @flexible_shard_value[shard_size]
     end
 
+    #: (Integer, ?String) -> Integer
     def get_seeded_flexible_shard(shard_size, string_seed = '')
       Digest::MD5.hexdigest(self['fqdn'] + string_seed)[0...7].to_i(16) %
         shard_size
     end
 
+    #: () -> Integer
     def get_shard
       self.get_flexible_shard(100)
     end
 
+    #: (Integer, Integer) -> bool
     def in_flexible_shard?(shard_threshold, shard_size)
       self.get_flexible_shard(shard_size) <= shard_threshold
     end
 
+    #: (Integer) -> bool
     def in_shard?(shard_threshold)
       @in_shard ||= self.get_flexible_shard(100)
       @in_shard <= shard_threshold
     end
 
+    #: (Integer) -> Integer
     def _timeshard_value(duration)
       # The timeshard will be the number of seconds into the duration.
       duration == 0 ? duration : self.get_flexible_shard(duration)
     end
 
+    #: (String, String) -> Hash[String, Integer]
     def timeshard_parsed_values(start_time, duration)
       # Validate the start_time string matches our prescribed format.
       st = FB::Helpers.parse_timeshard_start(start_time)
@@ -1111,6 +1297,7 @@ class Chef
       }
     end
 
+    #: (String, String, ?Integer) -> bool
     def in_timeshard?(start_time, duration, stack_depth = 1)
       # Parse all of our values and
       vals = self.timeshard_parsed_values(start_time, duration)
@@ -1139,20 +1326,24 @@ class Chef
     #       level :info
     #     end
     #   end
+    #: (Integer) ?{ (untyped) -> untyped } -> untyped
     def shard_block(threshold, &block)
       yield block if block_given? && in_shard?(threshold)
     end
 
+    #: (String) -> bool
     def shard_over_a_week_starting(start_date)
       in_shard?(rollout_shard(start_date))
     end
 
+    #: (String) -> bool
     def shard_over_a_week_ending(end_date)
       start_date = Date.parse(end_date) - 7
       in_shard?(rollout_shard(start_date.to_s))
     end
 
     # Shard range is 0-99
+    #: (String) -> untyped
     def rollout_shard(start_date)
       rollout_map = [
         1,
@@ -1199,6 +1390,7 @@ class Chef
       return shard
     end
 
+    #: () -> bool
     def firstboot_os?
       # this has to work even when we fail early on so we can call this from
       # broken runs in handlers
@@ -1209,6 +1401,7 @@ class Chef
       @_firstboot_os = File.exist?(File.join(prefix, 'firstboot_os'))
     end
 
+    #: () -> bool
     def firstboot_tier?
       # this has to work even when we fail early on so we can call this from
       # broken runs in handlers
@@ -1219,12 +1412,14 @@ class Chef
       @_firstboot_tier = File.exist?(File.join(prefix, 'firstboot_tier'))
     end
 
+    #: () -> bool
     def firstboot_any_phase?
       self.firstboot_os? || self.firstboot_tier?
     end
 
     # is this device a SSD?  If it's not rotational, then it's SSD
     # expects a short device name, e.g. 'sda', not '/dev/sda', not '/dev/sda3'
+    #: (String) -> bool
     def device_ssd?(device)
       unless self['block_device'][device]
         fail "fb_helpers: Device '#{device}' passed to node.device_ssd? " +
@@ -1233,6 +1428,7 @@ class Chef
       self['block_device'][device]['rotational'] == '0'
     end
 
+    #: () -> bool
     def root_compressed?
       fs = self.filesystem_data
       fs && fs['by_mountpoint'] && fs['by_mountpoint']['/'] &&
@@ -1240,16 +1436,19 @@ class Chef
           grep(/compress(-force)?=zstd/).empty?
     end
 
+    #: () -> bool
     def root_btrfs?
       fs = self.filesystem_data
       fs && fs['by_mountpoint'] && fs['by_mountpoint']['/'] &&
         fs['by_mountpoint']['/']['fs_type'] == 'btrfs'
     end
 
+    #: () -> bool
     def solo?
       Chef::Config[:solo] || Chef::Config[:local_mode]
     end
 
+    #: () -> String
     def root_user
       @root_user ||= value_for_platform(
         'windows' => { 'default' => 'Administrator' },
@@ -1257,6 +1456,7 @@ class Chef
       )
     end
 
+    #: () -> String
     def root_group
       # rubocop:disable Chef/Correctness/InvalidPlatformValueForPlatformHelper
       # See the `macos?` method above
@@ -1268,6 +1468,7 @@ class Chef
       # rubocop:enable Chef/Correctness/InvalidPlatformValueForPlatformHelper
     end
 
+    #: () -> bool
     def quiescent?
       # if this is set, we're trying to be small and anonymous
       File.exist?('/root/quiesce')
@@ -1284,11 +1485,13 @@ class Chef
     #
     # This will return modern filesystem data, where it exists *if* it exists.
     # Otherwise it will fail
+    #: () -> untyped
     def filesystem_data
       self['filesystem2'] || self['filesystem']
     end
 
     # returns the version-release of an rpm installed, or nil if not present
+    #: (String) -> String?
     def rpm_version(name)
       if (self.centos? && !self.centos7?) || self.fedora? || self.redhat_min_version?(8) ||
           self.oracle_min_version?(8) || self.almalinux_min_version?(8) || self.aristaeos_4_30_or_newer?
@@ -1321,6 +1524,7 @@ class Chef
     # manager. The first `rpm_version` call in a run has to build the whole
     # package manager cache, which is expensive, so prefer this whenever a
     # snapshot is good enough - see the `rpm_version` entry in the README.
+    #: (String) -> String?
     def rpm_version_from_ohai(name)
       pkg = self['packages']&.dig(name)
       return nil unless pkg && pkg['version']
@@ -1328,18 +1532,22 @@ class Chef
       [pkg['version'], pkg['release']].compact.reject(&:empty?).join('-')
     end
 
+    #: () -> String
     def selinux_mode
       self['selinux']['status']['current_mode'] || 'unknown'
     end
 
+    #: () -> String?
     def selinux_policy
       self['selinux']['status']['loaded_policy_name']
     end
 
+    #: () -> bool
     def selinux_enabled?
       self['selinux']['status']['selinux_status'] == 'enabled'
     end
 
+    #: () -> String
     def host_chef_base_path
       if ChefUtils.windows?
         File.join('C:', 'chef')
@@ -1348,6 +1556,7 @@ class Chef
       end
     end
 
+    #: () -> String
     def solo_chef_base_path
       if ChefUtils.windows?
         File.join('C:', 'chef', 'solo')
@@ -1356,6 +1565,7 @@ class Chef
       end
     end
 
+    #: () -> String
     def chef_base_path
       if self.solo?
         self.solo_chef_base_path
@@ -1364,6 +1574,7 @@ class Chef
       end
     end
 
+    #: () -> bool
     def taste_tester_mode?
       Chef::Config[:mode] == 'taste-tester'
     end
@@ -1397,6 +1608,9 @@ class Chef
     #  => ":)"
     #  irb> node.attr_lookup('a/very/deeply/nested/value')
     #  => ":)"
+    # Path is untyped: String flowing into inject types location as
+    # Chef::Node, whose #attribute? is undeclared.
+    #: (untyped, ?delim: String, ?default: untyped) -> untyped
     def attr_lookup(path, delim: '/', default: nil)
       return default if path.nil?
 
@@ -1412,6 +1626,7 @@ class Chef
       end
     end
 
+    #: () -> String
     def default_package_manager
       cls = Chef::ResourceResolver.resolve(:package, :node => self)
       if cls
@@ -1426,6 +1641,7 @@ class Chef
       end
     end
 
+    #: () -> bool
     def eth_is_affinitized?
       # we only care about ethernet MSI vectors
       # mlx is special cased because of their device naming convention
@@ -1470,6 +1686,7 @@ class Chef
       end
     end
 
+    #: () -> untyped
     def validate_and_fail_on_dynamic_addresses
       self['network']['interfaces'].each do |if_str, if_data|
         next unless if_data['addresses']
@@ -1485,6 +1702,7 @@ class Chef
       end
     end
 
+    #: () -> bool
     def nw_changes_allowed?
       method = self['fb_helpers']['network_changes_allowed_method']
       if method
@@ -1499,6 +1717,7 @@ class Chef
 
     # We can change interface configs if nw_changes_allowed? or we are operating
     # on a DSR VIP
+    #: (String) -> bool
     def interface_change_allowed?(interface)
       method = self['fb_helpers']['interface_change_allowed_method']
       if method
@@ -1510,6 +1729,7 @@ class Chef
       end
     end
 
+    #: (String) -> bool
     def interface_start_allowed?(interface)
       method = self['fb_helpers']['interface_start_allowed_method']
       if method
@@ -1521,6 +1741,7 @@ class Chef
 
     # Facebook-ism, put in place to avoid OSS cookbook breakage
     # It can be ignored.
+    #: () -> bool
     def antlir2_build?
       false
     end
@@ -1528,6 +1749,7 @@ class Chef
     # JSON recipes are a fairly new Chef feature (as of August 2025), and we
     # can't assume everyone is using them yet. To ensure there's no downstream breakage,
     # we'll be using this method as a way to support Chef clients that don't include the backport
+    #: () -> bool
     def json_recipes_supported?
       return @json_recipes_supported unless @json_recipes_supported.nil?
       @json_recipes_supported ||= Chef::VERSION >= '19.1.53' || Chef::VERSION >= '18.7.28'
@@ -1535,6 +1757,7 @@ class Chef
 
     # A gate which can be used to limit dangerous code to only run during
     # provisioning or upon boot
+    #: () -> bool
     def disruptable?
       @disruptable ||=
         self.firstboot_any_phase? || ENV['CHEF_BOOT_SERVICE'] == 'true'
@@ -1546,6 +1769,7 @@ class Chef
     # Note: When using this, if you have other filters (like, "is this in
     # my config"), use this filter last, so that you don't execute pkgmgmt
     # stuff on files you don't need to (and hopefully not at all)
+    #: (Array[String]) -> Array[String]
     def files_unowned_by_pkgmgmt(files)
       # this uses the chef-utils helpers, which we should be moving towards
       # instead of the fb_helpers helpers. rpm_based is obvious, debian?
@@ -1573,6 +1797,7 @@ class Chef
       unowned_files
     end
 
+    #: () -> bool
     def domain_controller?
       windows? && (
         self['kernel']['os_info']['product_type'] == 2 ||
