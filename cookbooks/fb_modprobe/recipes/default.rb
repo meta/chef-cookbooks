@@ -30,15 +30,6 @@ directory '/etc/modprobe.d' do
   mode '0755'
 end
 
-%w{
-  /etc/modprobe.d/blacklist
-  /etc/modprobe.d/blacklist.rpmsave
-}.each do |path|
-  file path do
-    action :delete
-  end
-end
-
 template '/etc/modprobe.d/fb_modprobe.conf' do
   source 'fb_modprobe.conf.erb'
   owner node.root_user
