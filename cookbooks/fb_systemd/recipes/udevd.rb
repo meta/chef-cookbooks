@@ -62,10 +62,6 @@ template '/etc/udev/udev.conf' do
   notifies :run, 'execute[reload udev]', :immediately
 end
 
-file '/etc/udev/rules.d/00-chef.rules' do
-  action :delete
-end
-
 template '/etc/udev/rules.d/99-chef.rules' do
   source 'rules.erb'
   owner node.root_user
