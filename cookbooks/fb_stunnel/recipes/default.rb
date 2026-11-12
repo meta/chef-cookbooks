@@ -54,7 +54,14 @@ template '/etc/stunnel/fb_tunnel.conf' do
   owner node.root_user
   group node.root_group
   mode '0644'
+  not_if { node['fb_stunnel']['config'].empty? }
   notifies :restart, 'service[stunnel]'
+end
+
+file 'remove /etc/stunnel/fb_tunnel.conf' do
+  path '/etc/stunnel/fb_tunnel.conf'
+  only_if { node['fb_stunnel']['config'].empty? }
+  action :delete
 end
 
 if node.debian? || node.ubuntu?
@@ -87,7 +94,9 @@ service 'stunnel' do
 end
 
 service 'disable stunnel' do
-  not_if { node['fb_stunnel']['enable'] }
+  only_if do
+    !node['fb_stunnel']['enable'] || node['fb_stunnel']['config'].empty?
+  end
   service_name packagename
   action [:stop, :disable]
 end

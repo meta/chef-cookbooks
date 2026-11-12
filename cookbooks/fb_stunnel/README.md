@@ -39,6 +39,9 @@ cert = /etc/stunnel/www.cert
 key = /etc/stunnel/www.key
 ```
 
+With no sections in `config`, stunnel is stopped and disabled and
+`/etc/stunnel/fb_tunnel.conf` is removed.
+
 ### Sysconfig
 
 The sysconfig will generate `/etc/sysconfig/stunnel` on RH-like OSes or
