@@ -21,6 +21,8 @@ module FB
     # rubocop:disable Style/MutableConstant
     # We let this particular constant remain mutable in case we need to shove in
     # a nat table or something.
+    # Untyped rather than Hash[String, Array[String]]: Hash#[] is nilable,
+    # which steep rejects at the TABLES_AND_CHAINS['nat'].each call below.
     TABLES_AND_CHAINS = {
       'mangle' => %w{PREROUTING INPUT OUTPUT FORWARD POSTROUTING},
       'filter' => %w{INPUT OUTPUT FORWARD},
@@ -34,6 +36,7 @@ module FB
     #
     # Note this is idempotent - you can call it many times, it will not
     # overwrite user rules
+    #: (untyped node) -> void
     def self.enable_nat(node)
       TABLES_AND_CHAINS['nat'] ||= %w{PREROUTING INPUT OUTPUT POSTROUTING}
 
@@ -58,6 +61,7 @@ module FB
     end
 
     # Is the given rule valid for the give ip version
+    #: (Hash[untyped, untyped] rule, Integer version) -> bool
     def self.rule_supports_ip_version?(rule, version)
       return true unless rule['ip']
       return true if rule['ip'] == version
@@ -65,6 +69,7 @@ module FB
       rule['ip'].is_a?(Array) && rule['ip'].include?(version)
     end
 
+    #: (Integer for_ip, untyped node) { (untyped, untyped) -> void } -> void
     def self.each_table(for_ip, node)
       FB::Iptables::TABLES_AND_CHAINS.each_key do |table|
         chains = node['fb_iptables'][table].to_hash
@@ -92,6 +97,7 @@ module FB
     #
     # For example, for filter/INPUT, we include any chains under 'filter' with
     # 'INPUT' in it's enabled list.
+    #: (String table, String chain, untyped node) -> Array[untyped]
     def self.get_dynamic_chains(table, chain, node)
       dynamic = node['fb_iptables']['dynamic_chains'][table].to_hash
       dynamic.map do |dynamic_chain, enabled_for|
@@ -103,6 +109,7 @@ module FB
     # IP version. This check is based on examining
     # /proc/net/ip#_tables_names; if the file has contents then the
     # iptables modules are loaded.
+    #: (Integer ip_version) -> bool
     def self.iptables_active?(ip_version)
       if ip_version == 4
         procfile = '/proc/net/ip_tables_names'
