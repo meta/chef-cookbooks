@@ -19,6 +19,7 @@ require 'shellwords'
 
 module FB
   class Systemd
+    #: (Integer | String user) -> Hash[String, String]
     def self.condition_user_online(user)
       # see https://www.freedesktop.org/wiki/Software/systemd/NetworkTarget/
       user_has_session = self.condition_user_session(user)
@@ -28,6 +29,7 @@ module FB
       }.merge(user_has_session)
     end
 
+    #: (Integer | String user) -> Hash[String, String]
     def self.condition_user_session(user)
       # this should hopefully be implemented upstream at some point, maybe as
       # ConditionUserSession
@@ -41,6 +43,7 @@ module FB
       return { 'ConditionPathExists' => "/run/user/#{uid}/bus" }
     end
 
+    #: (String path, String unit_type) -> String
     def self.path_to_unit(path, unit_type)
       cmd = [
         '/bin/systemd-escape',
@@ -51,12 +54,14 @@ module FB
       return Mixlib::ShellOut.new(cmd).run_command.stdout.chomp
     end
 
+    #: (String name) -> String
     def self.sanitize(name)
       name.gsub(/[^[a-zA-Z0-9]]/, '_')
     end
 
     # this is based on
     # https://github.com/chef/chef/blob/61a8aa44ac33fc3bbeb21fa33acf919a97272eb7/lib/chef/resource/systemd_unit.rb#L66-L83
+    #: (untyped content) -> String
     def self.to_ini(content)
       append_sections = ''
       case content
@@ -92,6 +97,7 @@ module FB
       end
     end
 
+    #: (Hash[untyped, untyped] default_systemd_settings, Hash[untyped, untyped]? systemd_overrides) -> Hash[untyped, untyped]
     def self.merge_unit(default_systemd_settings, systemd_overrides)
       merged = {
         'Service' => {},
@@ -129,6 +135,7 @@ module FB
       merged
     end
 
+    #: (String unit) -> Hash[String?, String?]
     def self.get_unit_properties(unit)
       property_map = {}
       Mixlib::ShellOut.new("systemctl show #{unit}").run_command.stdout.lines.each do |line|
