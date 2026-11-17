@@ -16,6 +16,7 @@
 
 module FB
   class Readline
+    #: ((String | bool) value) -> (String | bool)
     def self.render_value(value)
       case value
       when 'on', 'On', true
@@ -28,6 +29,7 @@ module FB
       out
     end
 
+    #: (Hash[String, untyped] key_bindings, Hash[String, untyped] variables) -> Array[String]
     def self.render_config(key_bindings, variables)
       out = []
       variables.each do |key, val|
@@ -39,6 +41,7 @@ module FB
       out
     end
 
+    #: (String mode, Hash[String, untyped] key_bindings, Hash[String, untyped] variables) -> Array[String]
     def self.render_mode_config(mode, key_bindings, variables)
       out = ["$if mode=#{mode}"]
       out += self.render_config(key_bindings, variables)
@@ -46,6 +49,7 @@ module FB
       out
     end
 
+    #: (String term, Hash[String, untyped] key_bindings, Hash[String, untyped] variables) -> Array[String]
     def self.render_term_config(term, key_bindings, variables)
       out = ["$if term=#{term}"]
       out += self.render_config(key_bindings, variables)
