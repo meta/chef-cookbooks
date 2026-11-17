@@ -18,6 +18,7 @@ module FB
   module Timers
     # Take a list of systemd units, and gather up their status in a single
     # class to systemctl, returning a hash
+    #: (Array[String] units) -> Hash[String, Hash[Symbol, String]]
     def self.get_systemd_unit_status(units)
       systemctl_show = 'systemctl show -p Id -p UnitFileState -p ActiveState'
       systemctl_show = "#{systemctl_show} #{units.join(' ')}"

@@ -20,7 +20,7 @@ module FB
   class Systemd
     # Path on the system where systemd units live.
     # This should be the path that `systemctl link` places the unit files at.
-    UNIT_PATH = '/etc/systemd/system'.freeze
+    UNIT_PATH = '/etc/systemd/system'.freeze #: String
 
     # Sensible defaults for timer attributes.
     TIMER_DEFAULTS = {
@@ -42,9 +42,9 @@ module FB
       'timeout' => nil,
       'timer_options' => {},
       'timer_unit_options' => {},
-    }.freeze
+    }.freeze #: Hash[String, untyped]
 
-    REQUIRED_TIMER_KEYS = ['calendar', 'commands', 'name'].freeze
+    REQUIRED_TIMER_KEYS = ['calendar', 'commands', 'name'].freeze #: Array[String]
 
     ALTERNATE_CALENDAR_KEYS = [
       'OnActiveSec',
@@ -52,22 +52,25 @@ module FB
       'OnStartupSec',
       'OnUnitActiveSec',
       'OnUnitInactiveSec',
-    ].freeze
+    ].freeze #: Array[String]
 
-    TIMER_COOKBOOK_KEYS = (TIMER_DEFAULTS.keys + REQUIRED_TIMER_KEYS).freeze
+    TIMER_COOKBOOK_KEYS = (TIMER_DEFAULTS.keys + REQUIRED_TIMER_KEYS).freeze #: Array[String]
 
     module Calendar
+      #: (?Integer? value) -> Every
       def every(value = nil)
         Every.new(value)
       end
 
       class Every
+        #: (?Integer? value) -> void
         def initialize(value = nil)
           @value = value
         end
 
         # Plural generators (do take a value):
 
+        #: () -> String
         def hours
           fail "A value is required for #{__method__}" unless @value
           fail 'A value cannot be > 24' if @value > 24
@@ -77,6 +80,7 @@ module FB
           "0/#{@value}:0:0"
         end
 
+        #: () -> String
         def minutes
           fail "A value is required for #{__method__}" unless @value
           fail 'A value cannot be > 60' if @value > 60
@@ -88,24 +92,28 @@ module FB
 
         # Singular generators (don't take a value):
 
+        #: () -> String
         def weekday
           fail "A value cannot be provided for #{__method__}" if @value
 
           'Mon..Fri'
         end
 
+        #: () -> String
         def week
           fail "A value cannot be provided for #{__method__}" if @value
 
           'weekly'
         end
 
+        #: () -> String
         def day
           fail "A value cannot be provided for #{__method__}" if @value
 
           'daily'
         end
 
+        #: () -> String
         def month
           fail "A value cannot be provided for #{__method__}" if @value
 
