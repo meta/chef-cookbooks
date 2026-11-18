@@ -16,6 +16,9 @@
 
 module FB
   class Dnf
+    # module_name stays untyped: a String annotation would reword the
+    # pre-existing NoMethod on the data['data'] union below. Truthful type: String.
+    #: (untyped module_name, Hash[String, untyped] module_data) -> String
     def self.gen_module_yaml(module_name, module_data)
       data = {
         'document' => 'modulemd-defaults',
