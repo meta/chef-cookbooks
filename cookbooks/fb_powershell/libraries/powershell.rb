@@ -16,6 +16,7 @@
 
 module FB
   module PowerShell
+    #: (untyped node) -> Array[String]
     def install_pwsh_path_list(node)
       os = node['os']
       case os
@@ -30,6 +31,7 @@ module FB
       end
     end
 
+    #: () -> Array[String]
     def get_windows_pwsh_paths
       core_path = Chef::Util::PathHelper.escape_glob_dir(
         File.join(ENV['ProgramFiles'], 'PowerShell'),
@@ -38,18 +40,21 @@ module FB
       return paths
     end
 
+    #: () -> Array[String]
     def get_linux_pwsh_paths
       # https://docs.microsoft.com/en-us/powershell/scripting/install/installing-powershell-core-on-linux
       paths = Dir.glob('/opt/microsoft/powershell/[6789]*')
       return paths
     end
 
+    #: () -> Array[String]
     def get_darwin_pwsh_paths
       # https://docs.microsoft.com/en-us/powershell/scripting/install/installing-powershell-core-on-macos
       paths = Dir.glob('/usr/local/microsoft/powershell/[6789]*')
       return paths
     end
 
+    #: (String profile, String install_path, bool core) -> String
     def get_profile_path(profile, install_path, core)
       if platform?('windows')
         if core
@@ -62,6 +67,7 @@ module FB
       end
     end
 
+    #: (String profile) -> String
     def get_profile_path_windows(profile)
       case profile
       when 'AllUsersAllHosts'
@@ -78,6 +84,7 @@ module FB
       end
     end
 
+    #: (String profile, String install_path) -> String
     def get_profile_path_windows_core(profile, install_path)
       case profile
       when 'AllUsersAllHosts'
@@ -93,6 +100,7 @@ module FB
       end
     end
 
+    #: (String profile, String install_path) -> String
     def get_profile_path_non_windows(profile, install_path)
       case profile
       when 'AllUsersAllHosts'
