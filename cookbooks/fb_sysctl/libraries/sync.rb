@@ -18,6 +18,7 @@
 module FB
   # tools for the fb_sysctl cookbook
   module Sysctl
+    #: (untyped node) -> String
     def self.binary_path(node)
       if node.macos?
         return '/usr/sbin/sysctl'
@@ -25,6 +26,7 @@ module FB
       '/sbin/sysctl'
     end
 
+    #: (untyped node) -> Hash[String, String?]
     def self.current_settings(node)
       s = Mixlib::ShellOut.new("#{FB::Sysctl.binary_path(node)} -a")
       s.run_command
@@ -38,10 +40,12 @@ module FB
       current
     end
 
+    #: (untyped val) -> String
     def self.normalize(val)
       val.to_s.gsub(/\s+/, ' ')
     end
 
+    #: (Hash[String, String?] current, Hash[String, untyped] desired) -> Hash[String, String]
     def self.incorrect_settings(current, desired)
       out_of_spec = {}
       desired.each do |k, v|
