@@ -25,8 +25,9 @@ module FB
       'repo_gpgcheck',
       'module_hotfixes',
       'antlir_extra_repo',
-    ].freeze
+    ].freeze #: Array[String]
 
+    #: (untyped _node) -> untyped
     def self.get_default_gpg_key(_node)
       value_for_platform(
         :centos => {
@@ -43,6 +44,7 @@ module FB
       )
     end
 
+    #: (untyped node, String name, ?(Hash[String, untyped]) config) -> Hash[String, untyped]
     def self.gen_repo_config(node, name, config = {})
       unless node.centos? || node.fedora? || node.rocky?
         fail 'fb_yum_repos[gen_repo_config]: unsupported platform ' +
@@ -76,6 +78,7 @@ module FB
       config
     end
 
+    #: (untyped node, String name, ?(Hash[String, untyped]) config) -> String
     def self.gen_repo_entry(node, name, config = {})
       out = "\n[#{name}]\n"
       self.gen_repo_config(node, name, config).sort.each do |key, val|
@@ -86,6 +89,7 @@ module FB
       out
     end
 
+    #: (untyped _node, String name, ?(Hash[String, untyped]) config) -> Hash[String, untyped]
     def self.gen_group_config(_node, name, config = {})
       unless config['repos']
         fail 'fb_yum_repos[self.gen_group_config]: no repos defined for ' +
@@ -99,6 +103,7 @@ module FB
       config
     end
 
+    #: (untyped node, String name, ?(Hash[String, untyped]) config) -> String
     def self.gen_group_entry(node, name, config = {})
       config = self.gen_group_config(node, name, config)
 
@@ -110,6 +115,7 @@ module FB
       out
     end
 
+    #: (String key, untyped value) -> String
     def self.gen_config_value(key, value)
       if value.is_a?(TrueClass) || value.to_s.strip == '1'
         if NUMBER_BOOLEAN_KEYS.include?(key)
