@@ -33,11 +33,13 @@ module FB
     #   root (hd0,0)
     #
     # Extracted string will be in the form of 'hd0,2' regardless
+    #: (String full_fstab) -> String?
     def self.extract_root_device(full_fstab)
       root_device_regexp = /^\s*[^#].*root[=\s]+['"]?\(?(\w+,\w+)\)?['"]?/
       full_fstab[root_device_regexp, 1]
     end
 
+    #: (String full_fstab) -> Array[String]
     def self.extract_device_hints(full_fstab)
       device_hints = []
       full_fstab.each_line do |line|
