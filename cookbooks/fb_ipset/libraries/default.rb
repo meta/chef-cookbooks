@@ -19,6 +19,7 @@ require 'set'
 
 module FB
   module IPset
+    #: () -> Hash[String, Hash[String, untyped]]
     def self.get_existing_ipsets
       save = Mixlib::ShellOut.new('ipset save').run_command
       save.error!
@@ -53,6 +54,7 @@ module FB
       existing_sets
     end
 
+    #: (String name, Hash[String, untyped] h) -> Array[String]
     def self.ipset_to_cmds(name, h)
       local_h = h.clone
       lines = []
