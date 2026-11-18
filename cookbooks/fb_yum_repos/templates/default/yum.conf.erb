@@ -9,6 +9,7 @@
 <% repos = @repos.flat_map do |group, group_config|
      FB::YumRepos.gen_group_config(node, group, group_config)['repos'].to_a
    end %>
-<% repos.sort_by(&:first).each do |repo, repo_config| %>
-<%=  FB::YumRepos.gen_repo_entry(node, repo, repo_config).chomp %>
-<% end %>
+<%# No trailing newline: must match MetalOS rootfs_dnf byte-for-byte %>
+<%= repos.sort_by(&:first).map { |repo, repo_config|
+      FB::YumRepos.gen_repo_entry(node, repo, repo_config)
+    }.join.chomp -%>
