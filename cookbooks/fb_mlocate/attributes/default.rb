@@ -35,6 +35,7 @@ default['fb_mlocate'] = {
     'fuse.sshfs',
     'fuse.gvfsd-fuse',
     'fuse.deweyfs',
+    'fuse.manifoldfs',
   ],
   'prunepaths' => [
     '/home',

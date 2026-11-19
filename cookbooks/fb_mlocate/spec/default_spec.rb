@@ -20,6 +20,32 @@ recipe 'fb_mlocate::default', :unsupported => [:mac_os_x] do |tc|
     tc.chef_run
   end
 
+  it 'renders the default updatedb exclusions' do
+    chef_run.converge(described_recipe) do |node|
+      node.default['fb_mlocate']['want_mlocate'] = true
+    end
+    expect(chef_run.node['fb_mlocate']['want_mlocate']).to eq(true)
+
+    prunefs = %w{
+      auto afs iso9660 sfs udf nfs nfs4 autofs
+      fuse.glusterfs fuse.nfusr fuse.squashfuse_ll fuse.gvfs.36
+      fuse.sshfs fuse.gvfsd-fuse fuse.deweyfs fuse.manifoldfs
+    }
+    prunepaths = %w{
+      /home /mnt/vol /afs /media /net /sfs /tmp /udev
+      /var/spool/cups /var/spool/squid /var/tmp /hay
+    }
+
+    expect(chef_run).to create_template('/etc/updatedb.conf')
+    # Select the template, not the removal file that also uses this path.
+    rendered = ChefSpec::Renderer.new(
+      chef_run,
+      chef_run.template('/etc/updatedb.conf'),
+    ).content
+    expect(rendered).to match(/^PRUNEFS = "#{Regexp.escape(prunefs.join(' '))}"$/)
+    expect(rendered).to match(/^PRUNEPATHS = "#{Regexp.escape(prunepaths.join(' '))}"$/)
+  end
+
   context 'on CentOS 8 or 9' do
     before do
       chef_run.node.stub(:centos8?).and_return(false)
