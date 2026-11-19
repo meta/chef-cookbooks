@@ -18,8 +18,9 @@
 
 module FB
   module FbSwap
-    DEV_ID_DIR = '/dev/disk/by-id'.freeze
+    DEV_ID_DIR = '/dev/disk/by-id'.freeze #: String
 
+    #: (untyped node) -> Hash[String, untyped]
     def self._validate(node)
       device = self._device(node)
       file = self._file(node)
@@ -146,17 +147,21 @@ module FB
       }
     end
 
+    #: (untyped node) -> Integer
     def self._get_swap_partition_size_kb(node)
       device = self._device(node)
       device ? (self._get_max_device_size_bytes(device)/1024) : 0
     end
 
+    # rubocop:disable Layout/LineLength
+    #: (Integer file_size_bytes, Integer file_current_size_bytes, Integer additional_file_current_size_bytes, untyped node) -> [Integer, Integer]
     def self._validate_resize_additional_file(
       file_size_bytes,
       file_current_size_bytes,
       additional_file_current_size_bytes,
       node
     )
+      # rubocop:enable Layout/LineLength
       # returns a pair:
       # file_size_bytes: size to use for main swap file
       # additional_file_size_bytes: size to use for additional swap file
@@ -212,6 +217,9 @@ module FB
       [file_size_bytes, additional_file_size_bytes]
     end
 
+    # current_size_bytes stays untyped: it can be nil, and Integer | nil
+    # would flag the subtraction below. Truthful type: Integer | nil.
+    #: (untyped node, String type, Integer size_bytes, untyped current_size_bytes) -> [bool, Integer]
     def self._validate_resize(node, type, size_bytes, current_size_bytes)
       # returns a pair:
       # swapoff needed: boolean
@@ -251,6 +259,9 @@ module FB
       [false, size_bytes]
     end
 
+    # Untyped: String? would flag device.delete_prefix in
+    # _get_persistent_device_path. Truthful type: String?.
+    #: (untyped node) -> untyped
     def self._device(node)
       swap_mounts = node.filesystem_data['by_device'].to_hash.select do |_k, v|
         v['fs_type'] == 'swap'
@@ -266,6 +277,7 @@ module FB
       end
     end
 
+    #: () -> Hash[String, String]
     def self._device_id_map
       # Create an ID map from device names to identifiers
       # Sort resolvers to ensure idempotency, as there can be
@@ -284,6 +296,7 @@ module FB
     # Not using persistent paths is sensitive to
     # changes in device enumeration. The kernel
     # provides no guarantees here
+    #: (untyped node) -> String
     def self._get_persistent_device_path(node)
       device = self._device(node)
       if node['fb_swap']['use_persistent_paths']
@@ -296,24 +309,31 @@ module FB
       end
     end
 
+    #: (untyped node) -> String
     def self._file(node)
       "#{self._filesystem(node)}swapvol/swapfile"
     end
 
+    #: (untyped node) -> String
     def self._additional_volume(node)
       "#{self._filesystem(node)}additionalswapvol"
     end
 
+    #: (untyped node) -> String
     def self._additional_file(node)
       "#{self._additional_volume(node)}/additionalswapfile"
     end
 
+    #: (untyped node) -> String
     def self._filesystem(node)
       filesystem = node['fb_swap']['filesystem']
       filesystem += '/' unless filesystem.end_with?('/')
       filesystem
     end
 
+    # Untyped: branches mix the untyped _device with Strings.
+    # Truthful type: String?.
+    #: (untyped node, String type) -> untyped
     def self._path(node, type)
       case type
       when 'device'
@@ -325,6 +345,7 @@ module FB
       end
     end
 
+    #: (untyped node) -> String?
     def self._label(node)
       device = self._device(node)
       label = node.filesystem_data['by_device'][device] &&
@@ -335,6 +356,7 @@ module FB
       label
     end
 
+    #: (untyped node, String type) -> String
     def self._swap_unit(node, type)
       if type == 'device'
         label = self._label(node)
@@ -355,6 +377,7 @@ module FB
       end
     end
 
+    #: (String device) -> Integer
     def self._get_max_device_size_bytes(device)
       cmd = Mixlib::ShellOut.new([
         '/usr/sbin/blockdev',
@@ -369,6 +392,7 @@ module FB
       size
     end
 
+    #: () -> Array[Hash[String, untyped]]
     def self._get_swaps_enabled
       cmd = Mixlib::ShellOut.new([
         '/usr/sbin/swapon',
@@ -391,10 +415,12 @@ module FB
       end
     end
 
+    #: (untyped node) -> untyped
     def self._filesystem_map_for_fs(node)
       node.filesystem_data['by_mountpoint'][node['fb_swap']['filesystem']]
     end
 
+    #: (untyped node) -> bool
     def self.swap_file_possible?(node)
       if _filesystem_map_for_fs(node)['fs_type'] == 'btrfs'
         # The historical take on btrfs is that swap files are not supported.
@@ -406,6 +432,7 @@ module FB
       return !self._on_rotational?(node)
     end
 
+    #: (untyped node) -> bool
     def self._on_rotational?(node)
       _filesystem_map_for_fs(node)['devices'].each do |dev|
         lsblk = Mixlib::ShellOut.new("lsblk --json --output ROTA #{dev}")
