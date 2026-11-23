@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-return unless platform_family?('windows')
+return unless ChefUtils.windows?
 
 # We place the actual ruby code to generate this in a lazy section, in order
 # to have it evaluate at converge time rather than compile time, while still being
