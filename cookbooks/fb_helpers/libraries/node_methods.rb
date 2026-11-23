@@ -728,7 +728,7 @@ class Chef
     #: () -> bool
     def windows?
       return @_fb_helpers_windows unless @_fb_helpers_windows.nil?
-      @_fb_helpers_windows = self['platform_family'] == 'windows'
+      @_fb_helpers_windows = ChefUtils.windows?
     end
 
     #: () -> bool

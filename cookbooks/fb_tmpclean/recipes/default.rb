@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-if platform_family?('windows')
+if ChefUtils.windows?
   include_recipe 'fb_tmpclean::windows'
   return
 end
