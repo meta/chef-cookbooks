@@ -36,7 +36,7 @@ rpm_packages = %w{
 
 # If you use our backports of rawhide RPM, you also need this,
 # but it's not available in C7 stock.
-if node.centos7?
+if node.centos_version?(7)
   rpm_packages << 'rpm-python'
 
   yc = Chef::Provider::Package::Yum::YumCache.instance

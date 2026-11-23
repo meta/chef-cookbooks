@@ -27,7 +27,7 @@ node.default['fb_logrotate']['configs']['dcpm'] = {
 }
 
 cmd = '/usr/bin/dcrpm --check-stuck-yum --verbose'
-if node.centos7?
+if node.centos_version?(7)
   cmd += ' --clean-yum-transactions'
 end
 

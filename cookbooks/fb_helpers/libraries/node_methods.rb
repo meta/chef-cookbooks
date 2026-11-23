@@ -1493,7 +1493,7 @@ class Chef
     # returns the version-release of an rpm installed, or nil if not present
     #: (String) -> String?
     def rpm_version(name)
-      if (self.centos? && !self.centos7?) || self.fedora? || self.redhat_min_version?(8) ||
+      if (self.centos? && !self.centos_version?(7)) || self.fedora? || self.redhat_min_version?(8) ||
           self.oracle_min_version?(8) || self.almalinux_min_version?(8) || self.aristaeos_4_30_or_newer?
         # returns epoch.version
         v = Chef::Provider::Package::Dnf::PythonHelper.instance.
@@ -1501,7 +1501,7 @@ class Chef
         unless v.nil?
           v.split(':')[1]
         end
-      elsif self.centos7? &&
+      elsif self.centos_version?(7) &&
         (FB::Version.new(Chef::VERSION) > FB::Version.new('14'))
         # returns epoch.version.arch
         v = Chef::Provider::Package::Yum::PythonHelper.instance.

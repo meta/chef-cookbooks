@@ -19,7 +19,7 @@
 default['fb_kernel'] = {
   'kernels' => {},
   'manage_packages' => true,
-  'manage_bls_configs' => node.centos? && !node.centos_version?(6) && !node.centos7?,
+  'manage_bls_configs' => node.centos? && !node.centos_version?(6) && !node.centos_version?(7),
   'boot_path' => '/boot',
   'want_devel' => false,
   'install_options' => [],

@@ -23,7 +23,7 @@ pkgs = %w{bridge-utils}
 
 # network-scripts used to be part of initscripts, but it has been split off
 # into its own package in CentOS 8
-if node.centos? && !node.centos7?
+if node.centos? && !node.centos_version?(7)
   pkgs << 'network-scripts'
 end
 

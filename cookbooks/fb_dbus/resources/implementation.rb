@@ -50,7 +50,7 @@ action :setup do
     dbus_action = [:disable]
   end
 
-  if node.centos7? || node.centos8?
+  if node.centos_version?(7) || node.centos8?
     dbus_daemon_svc = 'dbus'
   else
     # On CentOS Stream 9, this socket needs to be explicitly enabled for

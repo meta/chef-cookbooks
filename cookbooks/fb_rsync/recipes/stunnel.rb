@@ -18,7 +18,7 @@
 # limitations under the License.
 ##
 
-pkg = node.centos7? ? 'stunnel5' : 'stunnel'
+pkg = node.centos_version?(7) ? 'stunnel5' : 'stunnel'
 
 package pkg do
   action :upgrade

@@ -18,7 +18,7 @@
 # limitations under the License.
 #
 
-if !node.centos? || node.centos7?
+if !node.centos? || node.centos_version?(7)
   fail 'fb_kpatch is only supported on CentOS 8 or later'
 end
 
