@@ -18,7 +18,7 @@
 # limitations under the License.
 #
 
-if node.centos6?
+if node.centos_version?(6)
   fail 'fb_dnsmasq is not supported on CentOS 6.'
 end
 

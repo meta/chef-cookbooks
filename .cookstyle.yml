@@ -567,6 +567,7 @@ Chef/Meta/UpdateNodeMethod:
   Enabled: true
   Changes:
     centos5?: 'centos_version?(5)'
+    centos6?: 'centos_version?(6)'
 
 Chef/Meta/UseNodeDefault:
   Enabled: true

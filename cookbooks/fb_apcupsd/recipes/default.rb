@@ -22,7 +22,7 @@ unless node.debian? || node.ubuntu? || node.centos? || node.fedora?
   fail 'fb_apcupsd is only supported on Debian, Ubuntu or CentOS.'
 end
 
-if node.centos6?
+if node.centos_version?(6)
   fail 'fb_apcupsd is not supported on CentOS 6.'
 end
 

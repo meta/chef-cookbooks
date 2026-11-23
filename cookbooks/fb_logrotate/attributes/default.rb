@@ -89,11 +89,11 @@ else
   configs = rhel_configs
 end
 
-unless node.centos6?
+unless node.centos_version?(6)
   globals['compresscmd'] = '/usr/bin/pigz'
 end
 
-systemd_timer = node.systemd? && !(node.centos6? || node.macos?)
+systemd_timer = node.systemd? && !(node.centos_version?(6) || node.macos?)
 
 default['fb_logrotate'] = {
   'globals' => globals,
