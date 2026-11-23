@@ -59,13 +59,11 @@ package 'systemd packages' do
   # something in this transaction and then later missing a notification
   # for a package rule specific to an optional package.
   package_name lazy {
-    if node['fb_systemd']['journal-remote']['enable'] &&
-       node['platform_family'] == 'debian' &&
+    if node['fb_systemd']['journal-remote']['enable'] && ChefUtils.debian? &&
        !['trusty', 'jessie'].include?(node['lsb']['codename'])
       systemd_packages << 'systemd-journal-remote'
     end
-    if node['fb_systemd']['timesyncd']['enable'] &&
-        node['platform_family'] == 'debian'
+    if node['fb_systemd']['timesyncd']['enable'] && ChefUtils.debian?
       systemd_packages << 'systemd-timesyncd'
     end
     if node.dig('packages', 'systemd', 'version')

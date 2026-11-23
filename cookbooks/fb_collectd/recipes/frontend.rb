@@ -31,7 +31,7 @@ end
 
 package 'collectd-web' do
   # this is bundled in the main collectd-core package on debian
-  not_if { node['platform_family'] == 'debian' }
+  not_if { ChefUtils.debian? }
   action :upgrade
 end
 

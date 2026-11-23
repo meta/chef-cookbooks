@@ -503,7 +503,7 @@ class Chef
     #: () -> bool
     def debian_family?
       return @_fb_helpers_debian_family unless @_fb_helpers_debian_family.nil?
-      @_fb_helpers_debian_family = self['platform_family'] == 'debian'
+      @_fb_helpers_debian_family = ChefUtils.debian?
     end
 
     #: () -> bool
