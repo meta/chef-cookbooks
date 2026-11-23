@@ -72,7 +72,7 @@ whyrun_safe_ruby_block 'late-binding sysconfig variables' do
 
     if ['rhel', 'fedora'].include?(node['platform_family'])
       node.default['fb_spamassassin']['sa_sysconfig']['saupdate'] = 'yes'
-    elsif ['debian'].include?(node['platform_family'])
+    elsif ChefUtils.debian?
       node.default['fb_spamassassin']['sa_sysconfig']['cron'] = '1'
     end
   end
