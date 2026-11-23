@@ -197,7 +197,7 @@ if node.centos9? || node.fedora38? || node.fedora39?
     # depending on package version, this file may be installed by
     # rsyslog-logrotate, or it may be installed by the rsyslog package itself
     file '/etc/logrotate.d/rsyslog' do
-      action 'delete'
+      action :delete
     end
   end
 else
@@ -212,6 +212,6 @@ else
   # We want to manage the rsyslog logrotate config with fb_logrote so we
   # remove the one installed by the system package.
   file syslog_config do
-    action 'delete'
+    action :delete
   end
 end

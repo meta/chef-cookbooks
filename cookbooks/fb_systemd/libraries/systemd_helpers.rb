@@ -97,7 +97,9 @@ module FB
       end
     end
 
+    # rubocop:disable Layout/LineLength
     #: (Hash[untyped, untyped] default_systemd_settings, Hash[untyped, untyped]? systemd_overrides) -> Hash[untyped, untyped]
+    # rubocop:enable Layout/LineLength
     def self.merge_unit(default_systemd_settings, systemd_overrides)
       merged = {
         'Service' => {},
