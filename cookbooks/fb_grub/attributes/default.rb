@@ -17,11 +17,11 @@
 #
 
 # rubocop:disable Chef/Meta/RemoveStateFromAttributes
-version = node.centos6? ? 1 : 2
+version = node.centos_version?(6) ? 1 : 2
 grub2_base_dir = '/boot/grub2'
 case node['platform']
 when 'centos'
-  vendor = node.centos6? ? 'redhat' : 'centos'
+  vendor = node.centos_version?(6) ? 'redhat' : 'centos'
 when 'redhat'
   vendor = 'redhat'
 when 'debian'

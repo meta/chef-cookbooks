@@ -20,7 +20,7 @@ default['fb_ipset'] = {
   'enable' => false,
   'auto_cleanup' => true,
   'sets' => {},
-  'state_file' => if node.centos6?
+  'state_file' => if node.centos_version?(6)
                     '/etc/sysconfig/ipset'
                   else
                     '/etc/ipset/ipset'

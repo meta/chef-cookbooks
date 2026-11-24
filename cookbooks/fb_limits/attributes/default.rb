@@ -37,7 +37,7 @@ default['fb_limits']['root'] = {
 
 # Only set limit on centos6 as centos5 has a very high default limit already.
 # CentOS 6 defaults to 1024
-if node.centos6?
+if node.centos_version?(6)
   default['fb_limits']['*'] = {
     'nproc' => {
       'hard' => '61278',

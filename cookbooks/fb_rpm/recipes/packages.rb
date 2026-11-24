@@ -18,7 +18,7 @@
 # limitations under the License.
 #
 
-if node.centos6?
+if node.centos_version?(6)
   package "rpm.#{node['kernel']['machine']}" do
     only_if { node['fb_rpm']['manage_packages'] }
     action :upgrade

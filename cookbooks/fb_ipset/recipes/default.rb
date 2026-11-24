@@ -24,7 +24,7 @@ end
 
 include_recipe 'fb_ipset::default_packages'
 
-if node.centos6?
+if node.centos_version?(6)
   cookbook_file '/etc/init.d/ipset' do
     only_if { node['fb_ipset']['enable'] }
     source 'ipset-init'
