@@ -16,6 +16,7 @@
 
 module FB
   module Grubby
+    #: () -> (String | Array[untyped])
     def self.default_kernel
       @default_kernel ||= begin
         res = shell_out('/usr/sbin/grubby --default-kernel')
@@ -24,12 +25,14 @@ module FB
       end
     end
 
+    #: () -> Array[String]
     def self.kernels
       @kernels ||= begin # rubocop:todo Style/RedundantBegin
         ::Dir.glob('/boot/vmlinuz-*-*.*.*').sort
       end
     end
 
+    #: (String kernel_path) -> Hash[untyped, untyped]
     def get_boot_entry(kernel_path)
       @boot_entries ||= {}
       @boot_entries[kernel_path] ||= begin
@@ -46,24 +49,28 @@ module FB
       end
     end
 
+    #: (Set[String] boot_args, Set[String] include_args) -> Set[String]
     def get_add_args(boot_args, include_args)
       # only the arguments that need to be included that are
       # not already in boot_args
       include_args - boot_args
     end
 
+    #: (String kernel_path) -> Set[String]
     def get_boot_args(kernel_path)
       @boot_args ||= {}
       @boot_args[kernel_path] ||=
         get_boot_entry(kernel_path)['args'].split.to_set
     end
 
+    #: (Set[String] boot_args, Set[String] exclude_args) -> Set[String]
     def get_rm_args(boot_args, exclude_args)
       # only the arguments that need to be excluded that are
       # currently in boot_args
       exclude_args & boot_args
     end
 
+    #: (String kernel_path, Set[String] add_args, Set[String] rm_args) -> Array[String]
     def update_grub_cmd(kernel_path, add_args, rm_args)
       cmd = ['/usr/sbin/grubby', '--update-kernel', kernel_path]
       unless add_args.empty?
