@@ -27,7 +27,7 @@ ext4_features = %w{
   extra_isize
 }
 
-unless node.centos7?
+unless node.centos_version?(7)
   ext4_features << 'metadata_csum'
 end
 
