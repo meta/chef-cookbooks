@@ -9,7 +9,7 @@
 
   },
   "dependencies": {
-
+    "fb_helpers": ">= 0.0.0"
   },
   "providing": {
 

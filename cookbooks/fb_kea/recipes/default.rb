@@ -98,7 +98,7 @@ end
   end
 
   service "disable kea-dhcp#{fam}-server" do
-    not_if { node['fb_kea']['enable_dhcp4'] }
+    not_if { node['fb_kea']["enable_dhcp#{fam}"] }
     service_name "kea-dhcp#{fam}-server"
     action [:stop, :disable]
   end
